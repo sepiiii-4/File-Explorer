@@ -1,9 +1,7 @@
 import os
 import shutil
-import psutil
 from abc import ABC, abstractmethod
 from datetime import datetime
-import zipfile
 from Common.response import Response
 
 
@@ -75,18 +73,17 @@ class CommonThings(ABC) :
             
 
     @abstractmethod
-    def copy(self, paths, new_path) :
+    def copy(self, path, new_path) :
         list1 = []
-        for past_path in paths :
-            location, name = self.relative_path(past_path)
-            new_path = self.join_path(name, new_path)
-            exist_path = self.validate_path(new_path)
+        location, name = self.relative_path(path)
+        new_path = self.join_path(name, new_path)
+        exist_path = self.validate_path(new_path)
 
-            info = {"new_path" : new_path,
-                    "past_path" : past_path,
-                    "exist_path" : exist_path }
-            
-            list1.append(info)
+        info = {"new_path" : new_path,
+                "past_path" : path,
+                "exist_path" : exist_path }
+        
+        list1.append(info)
         
         return list1
 
@@ -129,8 +126,8 @@ class Folder(CommonThings) :
             if info["exist_path"]:
                 shutil.copytree(past_path, new_path)
             else :
-                new_path = f"{new_path} - Copy"
-                shutil.copytree(info["past_path"], info["new_path"])               
+                new_path = f"{info["new_path"]} - Copy"
+                shutil.copytree(info["past_path"], new_path)               
 
 
 class File(CommonThings) :
